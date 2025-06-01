@@ -1,7 +1,7 @@
 from django.db import models
 
-# Create your models here.
 from django.contrib.auth.models import AbstractUser
+from auditlog.registry import auditlog
 
 class usuario(AbstractUser):
     # Extend the default user model with additional fields if necessary
@@ -59,6 +59,7 @@ class solicitud(models.Model):
     estudiante = models.ForeignKey(alumno, on_delete=models.CASCADE, related_name='solicitudes')
     horario = models.ForeignKey(horario, on_delete=models.CASCADE, related_name='solicitudes')
     estado = models.CharField(max_length=20, choices=[('pendiente', 'Pendiente'), ('aceptada', 'Aceptada'), ('rechazada', 'Rechazada')], default='pendiente')
+    motivo= models.TextField(blank=True, null=True)
     
 class Feedback(models.Model):
     solicitud = models.ForeignKey(solicitud, on_delete=models.CASCADE, related_name='feedbacks')
@@ -73,14 +74,13 @@ class Feedback(models.Model):
     def __str__(self):
         return f"Feedback for {self.solicitud.estudiante.usuario.username} - {self.calificacion}"
     
-class Log_Auditoria(models.Model):
-    usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, related_name='logs')
-    accion = models.CharField(max_length=255)
-    fecha_hora = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        verbose_name = 'Log de Auditoría'
-        verbose_name_plural = 'Logs de Auditoría'
 
-    def __str__(self):
-        return f"{self.usuario.username} - {self.accion} - {self.fecha_hora}"
+
+auditlog.register(usuario)
+auditlog.register(tutor)
+auditlog.register(alumno)
+auditlog.register(cordinador)
+auditlog.register(horario)
+auditlog.register(solicitud)
+auditlog.register(Feedback)
