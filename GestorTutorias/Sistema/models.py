@@ -45,7 +45,6 @@ class cordinador(models.Model):
 class horario(models.Model):
     fecha = models.DateField()
     hora_inicio = models.TimeField()
-    hora_fin = models.TimeField()
     tutor = models.ForeignKey(tutor, on_delete=models.CASCADE, related_name='horarios')
     disponibilidad = models.BooleanField(default=True)
     

@@ -7,7 +7,7 @@ class CrearUsusuarioForm(UserCreationForm):
     Roles = (
         ('1', 'Tutor'),
         ('2', 'Alumno'),
-        ('3', 'Coordinador'),
+        ('3', 'cordinador'),
     )
     rol = forms.ChoiceField(choices=Roles, label='Rol', required=True, widget=forms.Select(attrs={'class': 'form-select'}))
     
@@ -51,7 +51,7 @@ class EditarUsuarioForm(UserChangeForm):
     Roles = (
         ('1', 'Tutor'),
         ('2', 'Alumno'),
-        ('3', 'Coordinador'),
+        ('3', 'cordinador'),
     )
     rol = forms.ChoiceField(choices=Roles, label='Rol', required=True, widget=forms.Select(attrs={'class': 'form-select'}))
     
@@ -92,13 +92,10 @@ class CambiarContrasennaForm(SetPasswordForm):
 class CrearHorarioForm(forms.ModelForm):
     class Meta:
         model = horario
-        fields = ['fecha', 'hora_inicio', 'hora_fin', 'tutor']
+        fields = ['fecha', 'hora_inicio']
+       
         
     
-class EditarHorarioForm(forms.ModelForm):
-    class Meta:
-        model = horario
-        fields = ['fecha', 'hora_inicio', 'hora_fin', 'tutor']
         
 class CrearSolicitudForm(forms.ModelForm):
     class Meta:
