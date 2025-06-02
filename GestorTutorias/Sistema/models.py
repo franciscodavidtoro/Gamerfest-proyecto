@@ -2,6 +2,8 @@ from django.db import models
 
 from django.contrib.auth.models import AbstractUser
 from auditlog.registry import auditlog
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class usuario(AbstractUser):
     # Extend the default user model with additional fields if necessary
@@ -64,8 +66,11 @@ class solicitud(models.Model):
 class Feedback(models.Model):
     solicitud = models.ForeignKey(solicitud, on_delete=models.CASCADE, related_name='feedbacks')
     comentario = models.TextField()
-    calificacion = models.IntegerField(default=0)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    calificacion = models.IntegerField(default=0,validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ] )
+    
 
     class Meta:
         verbose_name = 'Feedback'
