@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
@@ -6,11 +6,11 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout
 
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 
 
 from .models import usuario, tutor, alumno, cordinador, horario, solicitud, Feedback
-from .forms import CrearUsusuarioForm, EliminarUsuarioForm, EditarUsuarioForm, CambiarContrasennaForm, CrearHorarioForm, CrearSolicitudForm, crearFeedbackForm
+from .forms import CrearUsusuarioForm, EditarUsuarioForm, CambiarContrasennaForm, CrearHorarioForm, CrearSolicitudForm, crearFeedbackForm
 # Create your views here.
 class IndexView(View):
     def get(self, request):
@@ -26,12 +26,15 @@ class inicioSesion(LoginView):
     
 
     def get_success_url(self):
+        if usuario.objects.filter(username=self.request.user.username, Eliminado=True).exists():
+            return reverse_lazy('cerrar_sesion')
+        
         if cordinador.objects.filter(usuario=self.request.user).exists():
             return reverse_lazy('cordinadorDashboard')
         elif tutor.objects.filter(usuario=self.request.user).exists():
-            return reverse_lazy('ver_horario')
+            return reverse_lazy('PagTutor')
         elif alumno.objects.filter(usuario=self.request.user).exists():
-            return reverse_lazy('crear_solicitud')
+            return reverse_lazy('PagEstudiante')
         else:
             return reverse_lazy('home')
         
@@ -48,42 +51,34 @@ class CrearUsuarioView(View):
         if form.is_valid():
             form.save()
             if request.user.is_authenticated:
-                return redirect('CordinadorDashboard')
+                return redirect('cordinadorDashboard')
             return  redirect('inciarSesion') 
         return render(request, self.template_name, {'form': form, 'error': 'Error al crear el usuario'})
     
 class EditarUsuarioView(View):
     template_name='editar_usuario.html'
     form_class = EditarUsuarioForm
-    success_url = reverse_lazy('') #corejir
     
-    def get(self, request):
-        form = self.form_class(instance=request.user)
+    
+    def get(self, request,pk):
+        form = self.form_class(instance=usuario.objects.get(id=pk))
         return render(request, self.template_name, {'form': form})
     
-    def post(self, request):
-        form = self.form_class(request.POST, instance=request.user)
+    def post(self, request,pk):
+        form = self.form_class(request.POST, instance=usuario.objects.get(id=pk))
         if form.is_valid():
             form.save()
-            return HttpResponse("Usuario editado correctamente")
+            return redirect('ver_usuarios')
         
 class EliminarUsuarioView(View):
-    template_name='eliminar_usuario.html'
-    form_class = EliminarUsuarioForm
-    success_url = reverse_lazy('') #corejir
-    def get(self, request):
-        form = self.form_class()
-        return render(request, self.template_name, {'form': form})
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            try:
-                user = usuario.objects.get(username=username)
-                user.delete()
-                return HttpResponse("Usuario eliminado correctamente")
-            except usuario.DoesNotExist:
-                return HttpResponse("El usuario no existe")
+    def get(self, request,pk):
+        return render(request, 'eliminar_usuario.html')
+    def post(self, request,pk):
+        user = get_object_or_404(usuario, pk=pk)
+        user.Eliminado = True
+        user.save()
+        return redirect('ver_usuarios') 
+        
             
             
 class cambiarContrasenna(View):
@@ -113,15 +108,12 @@ class crearHorario(View):
             horario_instance.tutor = request.user.tutor
             #verificar si el horario ya existe 
             if horario.objects.filter(tutor=horario_instance.tutor, fecha=horario_instance.fecha,
-                                      hora_inicio=horario_instance.hora_fin
+                                      hora_inicio=horario_instance.hora_inicio
                                       ).exists():
                 return render(request, self.template_name, {'form': form, 'error': 'El horario ya existe o interfiere con otro horario'})
-            
-            
-            
-            
+  
             form.save()
-            return HttpResponse("Horario creado correctamente")
+            return redirect('PagTutor') 
         else:
             return render(request, self.template_name, {'form': form, 'error': 'Error al crear el horario'})
         
@@ -216,18 +208,16 @@ class crearFeedback(View):
             return HttpResponse("Solicitud no encontrada")
         
 
-        
-        if hasattr(request.user, 'alumno')  and solicitud_instance.estudiante == request.user.alumno:
-            form = self.form_class(request.POST)
-            if form.is_valid() :
-                feedback_instance = form.save(commit=False)
-                feedback_instance.cordinador = request.user.cordinador
-                feedback_instance.save()
-                return HttpResponse("Feedback creado correctamente")
-            else:
-                return render(request, self.template_name, {'form': form, 'error': 'Error al crear el feedback'})
+        form = self.form_class(request.POST)
+        if form.is_valid() :
+            feedback_instance = form.save(commit=False)
+                
+            feedback_instance.save()
+            return HttpResponse("Feedback creado correctamente")
         else:
-            return HttpResponse("No tienes permiso para crear un feedback")
+            return render(request, self.template_name, {'form': form, 'error': 'Error al crear el feedback'})
+        
+        
         
 
 
@@ -271,24 +261,55 @@ def exixten_horarios(dia, profesor):
     return horario.objects.filter(tutor=profesor, fecha__gte=fecha, disponibilidad=True).exists()
 
 
+def horariosPendiente(dia, profesor):
+    #obtine todos los horarios aprovados para el profesor
+    fecha_inicio = datetime.strptime(dia, '%Y-%m-%d')
+    horarios = horario.objects.filter(tutor=profesor, fecha__gte=fecha_inicio, disponibilidad=False)
+    if not horarios:
+        return []
+
+    return horarios
 
 
 
 
 
-class verHorario(View):
-    template_name = 'ver_horario.html'
+class PagTutor(View):
+    template_name = 'PagTutor.html'
     
-    def get(self, request, dia):
-        if hasattr(request.user, 'tutor'):
-            horarios = obtener_horarios_Semana(dia, request.user.tutor)
-            diaSiguienteSemana = (datetime.strptime(dia, '%Y-%m-%d') + timedelta(days=7)).strftime('%Y-%m-%d')
-            extHoratios = exixten_horarios(diaSiguienteSemana, request.user.tutor)
-        else:
-            horarios = []
+    def get(self, request, dia=None):
+        if not dia:
+            dia = datetime.today().strftime('%Y-%m-%d')
         
-        return render(request, self.template_name, {'horarios': horarios, 'extHoratios': extHoratios})
+        horarios = obtener_horarios_Semana(dia, request.user.tutor)
+        diaSiguienteSemana = (datetime.strptime(dia, '%Y-%m-%d') + timedelta(days=7)).strftime('%Y-%m-%d')
+        extHoratios = exixten_horarios(diaSiguienteSemana, request.user.tutor)
+        fechaHoy =date.today().strftime('%Y-%m-%d')
+        horariosPendientes = horariosPendiente(fechaHoy, request.user.tutor)
+        
+        
+        return render(request, self.template_name, {'horarios': horarios, 'extHoratios': extHoratios, 'horariosPendientes': horariosPendientes, 'dia': dia})
     
+    
+class PagEstudiante(View):
+    template_name = 'PagEstudiante.html'
+    def get(self, request):
+        fecha_inicio =datetime.today().strftime('%Y-%m-%d')
+        
+        solicitudes = solicitud.objects.filter(estudiante=request.user.alumno, estado='aceptada')
+        horarios_ids = solicitudes.values_list('horario_id', flat=True)
+
+        horariosPendientes = horario.objects.filter(
+            fecha__gte=fecha_inicio,
+            disponibilidad=False,
+            id__in=horarios_ids
+        )
+        solicitudes_sin_feedback = solicitud.objects.filter(estudiante=request.user.alumno, estado='aceptada').exclude(feedbacks__isnull=False)
+
+        
+        return render(request, self.template_name, {'solicitudes':solicitudes_sin_feedback, 'horarios': horariosPendientes})
+        
+        
     
     
     
@@ -324,5 +345,5 @@ class verUsuarios(View):
     template_name = 'ver_usuarios.html'
     
     def get(self, request):
-        usuarios = usuario.objects.all()
+        usuarios = usuario.objects.filter(Eliminado=False)
         return render(request, self.template_name, {'usuarios': usuarios})

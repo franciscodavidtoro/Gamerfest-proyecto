@@ -3,19 +3,19 @@
     <h2>{{ usuari.first_name }} {{ usuari.last_name }}</h2>
     <p>Correo: {{ usuari.email }}</p>
     <p>Rol:</p>
-    {% if usuari.cordinador %}
+    {% if usuari.coordinador %}
          Coordinador
     {% endif %}
     {% if usuari.tutor %}
         Tutor
     {% endif %}
     {% if usuari.alumno %}
-         Calumno
+         alumno
     {% endif %}
     
     
     <a href="{% url 'editar_usuario' usuari.id %}">Editar</a>
     <a href="{% url 'eliminar_usuario' usuari.id %}">Eliminar</a>
-    <a href="{% url 'cambiar_contrasenna' usuari.id %}">Cambiar Contraseña</a>
+    <a href="{2% url 'cambiar_contrasenna' usuari.id %222}">Cambiar Contraseña(camviarr url)</a>
 </div>
 {% endfor %}

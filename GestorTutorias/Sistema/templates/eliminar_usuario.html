@@ -1,0 +1,9 @@
+
+
+    <h1>¿Está seguro que desea eliminar este usuario?</h1>
+    <form  method="post">
+        {% csrf_token %}
+        <button type="submit">Sí</button>
+    </form>
+    <a href="{% url 'ver_usuarios' %}">No</a>
+

@@ -7,11 +7,13 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 class usuario(AbstractUser):
     # Extend the default user model with additional fields if necessary
+    Eliminado= models.BooleanField(default=False)
     class Meta:
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
     def __str__(self):
         return self.username
+    
 
 class tutor(models.Model):
     usuario = models.OneToOneField(usuario, on_delete=models.CASCADE, related_name='tutor')

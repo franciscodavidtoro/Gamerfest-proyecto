@@ -1,0 +1,18 @@
+{% for horario in horarios %}
+    <p>Horario: {{ horario.hora_inicio }}</p>
+    <p>Fecha: {{ horario.fecha }}</p>
+{% endfor %}
+
+{% for horariosPendiente in horariosPendientes %}
+    <p>Horario: {{ horariosPendiente.hora_inicio }}</p>
+    <p>Fecha: {{ horariosPendiente.fecha }}</p>
+    adsfsdfasfd
+{% endfor %}
+
+{% if extHoratios %}
+    <a href="{% url 'PagTutorParametro' dia %}">Ver Horarios</a>
+{% endif %}
+
+
+<a href="{% url 'crearHorario'  %}">Crear Horario </a>
+

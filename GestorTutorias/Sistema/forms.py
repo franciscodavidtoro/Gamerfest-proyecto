@@ -32,19 +32,7 @@ class CrearUsusuarioForm(UserCreationForm):
         return NuevoUsuario 
     
     
-class EliminarUsuarioForm(forms.ModelForm):
-    class Meta:
-        model = usuario
-        fields = ['username']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el nombre de usuario a eliminar'}),
-        }
-    
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if not usuario.objects.filter(username=username).exists():
-            raise forms.ValidationError("El usuario no existe.")
-        return username
+
     
 class EditarUsuarioForm(UserChangeForm):
     
@@ -90,15 +78,19 @@ class CambiarContrasennaForm(SetPasswordForm):
         
         
 class CrearHorarioForm(forms.ModelForm):
+    HORA_CHOICES = [(f"{hour:02d}:00", f"{hour:02d}:00") for hour in range(24)]
+    hora_inicio = forms.ChoiceField(
+        choices=HORA_CHOICES,
+        label='Hora de Inicio',
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-select'}) )
     
     class Meta:
-        
-        HORA_CHOICES = [(f"{hour:02d}:00", f"{hour:02d}:00") for hour in range(24)]
-        
+
         model = horario
         fields = ['fecha', 'hora_inicio']
         widgets = {
-            'hora_inicio': forms.ChoiceField(choices=HORA_CHOICES, label='Hora de Inicio', required=True, widget=forms.Select(attrs={'class': 'form-select'})),
+            
         }
 
         

@@ -1,0 +1,8 @@
+{% for horario in horarios %}
+    <p>Horario: {{ horario.hora_inicio }}</p>
+    <p>Fecha: {{ horario.fecha }}</p>
+{% endfor %}
+
+{% for solicitud in solicitudes %}
+    <a href="{% url 'crearFeedback' solicitud.id %}">Solicitud: {{ solicitud.id }}</a>
+{% endfor %}
