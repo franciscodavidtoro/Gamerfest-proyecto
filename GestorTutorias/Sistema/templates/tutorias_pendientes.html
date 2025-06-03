@@ -4,10 +4,29 @@
 
 {% block contenido %}
 
-{% for solicitud in solicitudes %}
-    <a href="{% url 'crearFeedback' solicitud.id %}">Solicitud: {{ solicitud.id }}</a>
-    <a href="{% url 'aceptarSolicitud' solicitud.id %}">aceptarSolicitud</a>
-    <a href="{% url 'rechazarSolicitud' solicitud.id %}">rechazarSolicitud</a>
-{% endfor %}
+<div class="container mt-4">
+  <div class="row">
+    {% for solicitud in solicitudes %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-envelope-paper"></i> Solicitud #{{ solicitud.id }}
+          </h5>
+        </div>
+        <div class="card-footer d-flex justify-content-between flex-wrap gap-2">
+          
+          <a href="{% url 'aceptarSolicitud' solicitud.id %}" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-check-circle"></i> Aceptar
+          </a>
+          <a href="{% url 'rechazarSolicitud' solicitud.id %}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-x-circle"></i> Rechazar
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock %}

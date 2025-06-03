@@ -138,7 +138,7 @@ class crearSolicitud(View):
                 solicitud_instance.estudiante = request.user.alumno
                 solicitud_instance.horario = get_object_or_404(horario, id=pk)
                 solicitud_instance.save()
-                return HttpResponse("Solicitud creada correctamente")
+                return redirect('PagEstudiante')
             else:
                 return render(request, self.template_name, {'form': form, 'error': 'Error al crear la solicitud'})
         else:
@@ -171,7 +171,7 @@ class aceptarSolicitud(View):
             solicitud_instance.estado = 'Aceptada'
             solicitud_instance.save()
 
-            return HttpResponse("Solicitud aceptada correctamente")
+            return redirect('Tutorias_pendientes')
 
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
@@ -184,7 +184,7 @@ class rechazarSolicitud(View):
             
             solicitud_instance.estado = 'Rechazada'
             solicitud_instance.save()
-            return HttpResponse("Solicitud rechazada correctamente")
+            return redirect('Tutorias_pendientes')
             
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
@@ -218,7 +218,7 @@ class crearFeedback(View):
             feedback_instance = form.save(commit=False)
             feedback_instance.solicitud = solicitud_instance
             feedback_instance.save()
-            return HttpResponse("Feedback creado correctamente")
+            return redirect('PagEstudiante')
         else:
             return render(request, self.template_name, {'form': form, 'error': 'Error al crear el feedback'})
         

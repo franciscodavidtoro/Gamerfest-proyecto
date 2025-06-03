@@ -1,11 +1,89 @@
-{% for horario in horarios %}
-    <p>Horario: {{ horario.hora_inicio }}</p>
-    <p>Fecha: {{ horario.fecha }}</p>
-{% endfor %}
+{% extends 'formBase.html' %}
 
-{% for solicitud in solicitudes %}
-    <a href="{% url 'crearFeedback' solicitud.id %}">Solicitud: {{ solicitud.id }}</a>
-{% endfor %}
+{% block titulo %}Crear feedback{% endblock %}
 
-<a href="{% url 'elegirProfesor' %}">SoliciraTuroria</a>
+{% block contenido %}
 
+  <!-- Contenido Principal -->
+  <div class="container py-4">
+    <h2 class="mb-4 fw-bold">Panel del Alumno</h2>
+    
+    <div class="row g-4">
+      <!-- Tutorías Pendientes -->
+      <div class="col-lg-4">
+        <div class="card shadow h-100">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-calendar-check me-2"></i>Tutorías Pendientes
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              {% for horario in horarios %}
+                <div class="list-group-item">
+                  <p>Horario: {{ horario.hora_inicio }}</p>
+                  <p>Fecha: {{ horario.fecha }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tutorías para Calificar -->
+      <div class="col-lg-4">
+  <div class="card shadow h-100">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="card-title mb-0">
+        <i class="bi bi-star me-2"></i>Tutorías para Calificar
+      </h5>
+    </div>
+    <div class="card-body">
+      {% if solicitudes %}
+        <div class="list-group list-group-flush">
+          {% for solicitud in solicitudes %}
+            <a href="{% url 'crearFeedback' solicitud.id %}" class="list-group-item list-group-item-action">
+              Solicitud: {{ solicitud.horario.fecha }} — {{ solicitud.horario.hora_inicio }}
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">No hay tutorías pendientes para calificar.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+      <!-- Solicitar Tutoría -->
+      <div class="col-lg-4">
+        <div class="card shadow h-100">
+          <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-plus-circle me-2"></i>Solicitar Tutoría
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="text-center">
+              <i class="bi bi-calendar-plus fs-1 text-success mb-3"></i>
+              <h5 class="mb-3">¿Necesitas una tutoría?</h5>
+              <p class="text-muted mb-4">Selecciona un profesor y programa tu sesión de tutoría personalizada.</p>
+              
+              <div class="d-grid">
+                <a href="{% url 'elegirProfesor' %}" class="btn btn-success btn-lg">
+                  <i class="bi bi-person-plus me-2"></i>Solicitar Tutoría
+                </a>
+              </div>
+              
+              <div class="mt-4">
+                <small class="text-muted">
+                  <i class="bi bi-info-circle me-1"></i>
+                  Podrás elegir profesor y horario disponible
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -4,12 +4,24 @@
 
 {% block contenido %}
 
-
-{% for horario in horarios %}
-    <p>Horario: {{ horario.hora_inicio }}</p>
-    <p>Fecha: {{ horario.fecha }}</p>
-    <a href="{% url 'crearSolicitud' horario.id %}">Hacer Solicitud</a>
-{% endfor %}
-
+<div class="container mt-4">
+  <div class="row">
+    {% for horario in horarios %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title"><i class="bi bi-clock"></i> {{ horario.hora_inicio }}</h5>
+          <p class="card-text"><strong>Fecha:</strong> {{ horario.fecha }}</p>
+        </div>
+        <div class="card-footer bg-transparent border-top-0">
+          <a href="{% url 'crearSolicitud' horario.id %}" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-pencil-square"></i> Hacer Solicitud
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock %}

@@ -1,8 +1,30 @@
-{% for usuari in profesores %}
-<div class="usuario">
-    <h2>{{ usuari.first_name }} {{ usuari.last_name }}</h2>
-    <p>Correo: {{ usuari.email }}</p>
-    <p>Rol:</p>
-    <a href="{% url 'ver_horarios_profesor' usuari.id %}">ver_horarios_profesor</a>
+{% extends 'formBase.html' %}
+
+{% block titulo %}Horario Profesor{% endblock %}
+
+{% block contenido %}
+
+<div class="container mt-4">
+  <div class="row">
+    {% for usuari in profesores %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <i class="bi bi-person-circle"></i> {{ usuari.first_name }} {{ usuari.last_name }}
+          </h5>
+          <p class="card-text"><strong>Correo:</strong> {{ usuari.email }}</p>
+          <p class="card-text"><strong>Rol:</strong> Profesor</p>
+        </div>
+        <div class="card-footer bg-transparent border-top-0">
+          <a href="{% url 'ver_horarios_profesor' usuari.id %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-calendar-event"></i> Ver Horarios
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
-{% endfor %}
+
+{% endblock %}

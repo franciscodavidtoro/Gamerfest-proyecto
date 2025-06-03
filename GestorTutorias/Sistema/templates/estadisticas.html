@@ -1,21 +1,39 @@
-<h1>Estadísticas del Sistema</h1>
-    
-    <h2>Usuarios</h2>
-    <p>Total de usuarios: {{ usuarios }}</p>
-    <p>Tutores: {{ tutores }}</p>
-    <p>Alumnos: {{ alumnos }}</p>
-    <p>Coordinadores: {{ coordinadores }}</p>
-    
-    <h2>Promedio de Feedbacks por Tutor</h2>
-    <table border="1">
-        <tr>
-            <th>Tutor</th>
-            <th>Promedio</th>
-        </tr>
-        {% for feedback in PromedioFeedbacksTutores %}
-        <tr>
-            <td>{{ feedback.solicitud__horario__tutor__usuario__username }}</td>
-            <td>{{ feedback.promedio|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+{% extends 'formBase.html' %}
+
+{% block titulo %}Tutor{% endblock %}
+
+{% block contenido %}
+
+<div class="container mt-5">
+    <h1 class="mb-4 text-primary">Estadísticas del Sistema</h1>
+
+    <h2 class="mt-4">Usuarios</h2>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">Total de usuarios: <strong>{{ usuarios }}</strong></li>
+        <li class="list-group-item">Tutores: <strong>{{ tutores }}</strong></li>
+        <li class="list-group-item">Alumnos: <strong>{{ alumnos }}</strong></li>
+        <li class="list-group-item">Coordinadores: <strong>{{ coordinadores }}</strong></li>
+    </ul>
+
+    <h2 class="mt-4">Promedio de Feedbacks por Tutor</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>Tutor</th>
+                    <th>Promedio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feedback in PromedioFeedbacksTutores %}
+                <tr>
+                    <td>{{ feedback.solicitud.horario.tutor.usuario.username }}</td>
+                    <td>{{ feedback.promedio|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
