@@ -7,7 +7,7 @@ class CrearUsusuarioForm(UserCreationForm):
     Roles = (
         ('1', 'Tutor'),
         ('2', 'Alumno'),
-        ('3', 'cordinador'),
+        ('3', 'Coordinador'),
     )
     rol = forms.ChoiceField(choices=Roles, label='Rol', required=True, widget=forms.Select(attrs={'class': 'form-select'}))
     
@@ -39,7 +39,7 @@ class EditarUsuarioForm(UserChangeForm):
     Roles = (
         ('1', 'Tutor'),
         ('2', 'Alumno'),
-        ('3', 'cordinador'),
+        ('3', 'Coordinador'),
     )
     rol = forms.ChoiceField(choices=Roles, label='Rol', required=True, widget=forms.Select(attrs={'class': 'form-select'}))
     

@@ -1,6 +1,13 @@
-<form method="post">
+
+{% extends 'formBase.html' %}
+
+{% block titulo %}Crear Usuario{% endblock %}
+
+{% block contenido %}
+    <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     {{ error }}
     <button type="submit" class="btn btn-primary">Crear Usuario</button>
-</form>
+    </form>
+{% endblock %}

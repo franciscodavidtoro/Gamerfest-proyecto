@@ -1,6 +1,14 @@
-<form method="post">
+
+
+{% extends 'formBase.html' %}
+
+{% block titulo %}Enviar Solicitud{% endblock %}
+
+{% block contenido %}
+    <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     {{ error }}
     <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
-</form>
+    </form>
+{% endblock %}

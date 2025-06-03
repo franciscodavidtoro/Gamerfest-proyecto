@@ -1,6 +1,17 @@
-<form method="post">
+
+
+
+
+
+{% extends 'formBase.html' %}
+
+{% block titulo %}Actualizar Usuario{% endblock %}
+
+{% block contenido %}
+    <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     {{ error }}
-    <button type="submit" class="btn btn-primary">ActualizarUsuario</button>
-</form>
+    <button type="submit" class="btn btn-primary">Actualizar Usuario</button>
+    </form>
+{% endblock %}
