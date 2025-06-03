@@ -1,15 +1,106 @@
-
-
 {% extends 'formBase.html' %}
 
 {% block titulo %}Eliminar Usuario{% endblock %}
 
 {% block contenido %}
-     <h1>¿Está seguro que desea eliminar este usuario?</h1>
-    <form  method="post">
-        {% csrf_token %}
-        <button type="submit">Sí</button>
-    </form>
-    <a href="{% url 'ver_usuarios' %}">No</a>
-{% endblock %}
+<div class="row justify-content-center">
+    <div class="">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white text-center py-3">
+                <h5 class="card-title mb-0 fw-bold">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h5>
+            </div>
+            <div class="card-body p-4 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-person-x text-danger" style="font-size: 4rem;"></i>
+                </div>
+                
+                <h4 class="fw-bold text-dark mb-3">¿Está seguro que desea eliminar este usuario?</h4>
+                
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <div>
+                        <strong>¡Atención!</strong> Esta acción no se puede deshacer. Se eliminará permanentemente toda la información del usuario.
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-muted">
+                        Al confirmar la eliminación, se perderán todos los datos asociados a este usuario, incluyendo:
+                    </p>
+                    <ul class="list-unstyled text-muted">
+                        <li><i class="bi bi-check-circle text-danger me-2"></i>Información personal</li>
+                        <li><i class="bi bi-check-circle text-danger me-2"></i>Historial de tutorías</li>
+                        <li><i class="bi bi-check-circle text-danger me-2"></i>Calificaciones y feedback</li>
+                    </ul>
+                </div>
 
+                <form method="post" class="d-inline">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'ver_usuarios' %}" class="btn btn-outline-secondary btn-lg px-4 me-md-2">
+                            <i class="bi bi-x-circle me-2"></i>No, Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg px-4">
+                            <i class="bi bi-trash-fill me-2"></i>Sí, Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="bi bi-shield-exclamation me-1"></i>
+                Acción irreversible - Proceda con precaución
+            </small>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Animaciones para los botones */
+    .btn-danger {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+    
+    .btn-outline-secondary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Efecto de pulso sutil para el icono principal */
+    .bi-person-x {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+    
+    /* Mejorar la apariencia de la alerta */
+    .alert-warning {
+        border-left: 4px solid #ffc107;
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+    }
+</style>
+{% endblock %}

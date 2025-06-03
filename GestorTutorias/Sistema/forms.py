@@ -35,6 +35,7 @@ class CrearUsusuarioForm(UserCreationForm):
 
     
 class EditarUsuarioForm(UserChangeForm):
+    password = None  # This removes the password field
     
     Roles = (
         ('1', 'Tutor'),
