@@ -54,7 +54,7 @@ class horario(models.Model):
         verbose_name_plural = 'Horarios'
 
     def __str__(self):
-        return f"{self.hora_inicio} - {self.hora_fin} || {self.tutor.usuario.username} || {self.fecha}"
+        return f"{self.hora_inicio}  || {self.tutor.usuario.username} || {self.fecha}"
 
 class solicitud(models.Model):
     estudiante = models.ForeignKey(alumno, on_delete=models.CASCADE, related_name='solicitudes')

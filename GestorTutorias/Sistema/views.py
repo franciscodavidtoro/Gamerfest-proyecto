@@ -1,29 +1,45 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.views import View
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+
+
+
+from datetime import datetime, timedelta
 
 
 from .models import usuario, tutor, alumno, cordinador, horario, solicitud, Feedback
-from .forms import CrearUsusuarioForm, EliminarUsuarioForm, EditarUsuarioForm
+from .forms import CrearUsusuarioForm, EliminarUsuarioForm, EditarUsuarioForm, CambiarContrasennaForm, CrearHorarioForm, CrearSolicitudForm, crearFeedbackForm
 # Create your views here.
-class IndexView:
+class IndexView(View):
     def get(self, request):
+        #si no ay usuarios redirije a crear usuario 
+        if not usuario.objects.exists():
+            return redirect('crear_usuario')
+        
         return render(request, 'index.html')
     
 class inicioSesion(LoginView):
     template_name = 'login.html'  # tu plantilla de inicio de sesión
     redirect_authenticated_user = True
-    success_url = reverse_lazy('home')  # reemplaza 'home' por tu vista destino
+    
 
     def get_success_url(self):
-        return self.success_url
+        if hasattr(self.request.user, 'cordinador'):
+            return redirect('CordinadorDashboard')
+        elif hasattr(self.request.user, 'tutor'):
+            return redirect('ver_horario')
+        elif hasattr(self.request.user, 'alumno'):
+            return redirect('crear_solicitud')
+        else:
+            return redirect('home')
+        
     
 class CrearUsuarioView(View):
     template_name='crear_usuario.html'
     form_class = CrearUsusuarioForm
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('index') 
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -36,7 +52,7 @@ class CrearUsuarioView(View):
 class EditarUsuarioView(View):
     template_name='editar_usuario.html'
     form_class = EditarUsuarioForm
-    success_url = reverse_lazy('home')
+    success_url = redirect('home')
     
     def get(self, request):
         form = self.form_class(instance=request.user)
@@ -51,7 +67,7 @@ class EditarUsuarioView(View):
 class EliminarUsuarioView(View):
     template_name='eliminar_usuario.html'
     form_class = EliminarUsuarioForm
-    success_url = reverse_lazy('home')  
+    success_url = redirect('home')  
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -99,22 +115,15 @@ class crearHorario(View):
                 return render(request, self.template_name, {'form': form, 'error': 'El horario ya existe o interfiere con otro horario'})
             
             
+            
+            
             form.save()
             return HttpResponse("Horario creado correctamente")
         else:
             return render(request, self.template_name, {'form': form, 'error': 'Error al crear el horario'})
         
 
-class verHorario(View):
-    template_name = 'ver_horario.html'
-    
-    def get(self, request):
-        if hasattr(request.user, 'tutor'):
-            horarios = horario.objects.filter(tutor=request.user.tutor)
-        else:
-            horarios = []
-        
-        return render(request, self.template_name, {'horarios': horarios})
+
     
 class crearSolicitud(View):
     template_name = 'crear_solicitud.html'
@@ -180,7 +189,101 @@ class rechazarSolicitud(View):
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
 
+class crearFeedback(View):
+    template_name = 'crear_feedback.html'
+    form_class = crearFeedbackForm
+    
+    def get(self, request, solicitud_id):
+        try:
+            solicitud_instance = solicitud.objects.get(id=solicitud_id)
+        except solicitud.DoesNotExist:
+            return HttpResponse("Solicitud no encontrada")
+        
+        
+        if hasattr(request.user, 'alumno') and solicitud_instance.estudiante == request.user.alumno:
+            form = self.form_class()
+            return render(request, self.template_name, {'form': form})
+        else:
+            return HttpResponse("No tienes permiso para crear un feedback")
+    
+    def post(self, request, solicitud_id):
+        try:
+            solicitud_instance = solicitud.objects.get(id=solicitud_id)
+        except solicitud.DoesNotExist:
+            return HttpResponse("Solicitud no encontrada")
+        
 
         
+        if hasattr(request.user, 'alumno')  and solicitud_instance.estudiante == request.user.alumno:
+            form = self.form_class(request.POST)
+            if form.is_valid() :
+                feedback_instance = form.save(commit=False)
+                feedback_instance.cordinador = request.user.cordinador
+                feedback_instance.save()
+                return HttpResponse("Feedback creado correctamente")
+            else:
+                return render(request, self.template_name, {'form': form, 'error': 'Error al crear el feedback'})
+        else:
+            return HttpResponse("No tienes permiso para crear un feedback")
+        
+
+
+def obtener_horarios_Semana(dia, profesor):
+    """
+    Obtiene los horarios de una semana para un profesor específico.
+    
+    Args:
+        dia (str): Día de la semana en formato 'YYYY-MM-DD'.
+        profesor (tutor): Instancia del tutor para el cual se obtienen los horarios.
+        
+    Returns:
+        list: Lista de horarios disponibles para el profesor en esa semana.
+    """
+    
+    
+    fecha_inicio = datetime.strptime(dia, '%Y-%m-%d')
+    horarios = []
+    
+    for i in range(7):
+        fecha_actual = fecha_inicio + timedelta(days=i)
+        horarios_dia = horario.objects.filter(tutor=profesor, fecha=fecha_actual, disponibilidad=True)
+        horarios.extend(horarios_dia)
+    
+    return horarios
+
+def exixten_horarios(dia, profesor):
+    """
+    Verifica si existen horarios para un profesor en un día y para adelante.
+    
+    Args:
+        dia (str): Día de la semana en formato 'YYYY-MM-DD'.
+        profesor (tutor): Instancia del tutor para el cual se verifica la existencia de horarios.
+        
+    Returns:
+        bool: True si existen horarios, False en caso contrario.
+    """
+    
+    
+    fecha = datetime.strptime(dia, '%Y-%m-%d')
+    return horario.objects.filter(tutor=profesor, fecha__gte=fecha, disponibilidad=True).exists()
+
+
+
+
+
+
+
+class verHorario(View):
+    template_name = 'ver_horario.html'
+    
+    def get(self, request, dia):
+        if hasattr(request.user, 'tutor'):
+            horarios = obtener_horarios_Semana(dia, request.user.tutor)
+            diaSiguienteSemana = (datetime.strptime(dia, '%Y-%m-%d') + timedelta(days=7)).strftime('%Y-%m-%d')
+            extHoratios = exixten_horarios(diaSiguienteSemana, request.user.tutor)
+        else:
+            horarios = []
+        
+        return render(request, self.template_name, {'horarios': horarios, 'extHoratios': extHoratios})
 
         

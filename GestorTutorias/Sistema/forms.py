@@ -90,10 +90,18 @@ class CambiarContrasennaForm(SetPasswordForm):
         
         
 class CrearHorarioForm(forms.ModelForm):
+    
     class Meta:
+        
+        HORA_CHOICES = [(f"{hour:02d}:00", f"{hour:02d}:00") for hour in range(24)]
+        
         model = horario
         fields = ['fecha', 'hora_inicio']
-       
+        widgets = {
+            'hora_inicio': forms.ChoiceField(choices=HORA_CHOICES, label='Hora de Inicio', required=True, widget=forms.Select(attrs={'class': 'form-select'})),
+        }
+
+        
         
     
         
