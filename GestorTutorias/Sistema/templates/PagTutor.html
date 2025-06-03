@@ -76,6 +76,7 @@
               <table class="table table-striped mb-0 text-center align-middle">
                 <thead class="table-primary">
                   <tr>
+                    <th scope="col">Fecha</th>
                     <th scope="col">Hora</th>
                     <th scope="col">Disponibilidad</th>
                     <th scope="col">Lunes</th>
@@ -90,13 +91,15 @@
                   
                   {% for horario in horarios %}
                         <tr>
+                        <th scope="row">{{ horario.fecha|date:"Y-m-d" }}</th>
                         <th scope="row">{{ horario.hora_inicio }}</th>
                         <td>{% if horario.disponibilidad %}libre {% else %} ocupado {% endif %}</td>
-                        <td>{% if horario.fecha|date:"l" == 'Monday' %}✓{% else %}-{% endif %}</td>
-                        <td>{% if horario.fecha|date:"l" == 'Tuesday' %}✓{% else %}-{% endif %}</td>
-                        <td>{% if horario.fecha|date:"l" == 'Wednesday' %}✓{% else %}-{% endif %}</td>
-                        <td>{% if horario.fecha|date:"l" == 'Thursday' %}✓{% else %}-{% endif %}</td>
-                        <td>{% if horario.fecha|date:"l" == 'Friday' %}✓{% else %}-{% endif %}</td>      {% endfor %}
+                        <td>{% if horario.fecha|date:"w" == "1" %}✓{% else %}-{% endif %}</td> <!-- Lunes -->
+                        <td>{% if horario.fecha|date:"w" == "2" %}✓{% else %}-{% endif %}</td> <!-- Martes -->
+                        <td>{% if horario.fecha|date:"w" == "3" %}✓{% else %}-{% endif %}</td> <!-- Miércoles -->
+                        <td>{% if horario.fecha|date:"w" == "4" %}✓{% else %}-{% endif %}</td> <!-- Jueves -->
+                        <td>{% if horario.fecha|date:"w" == "5" %}✓{% else %}-{% endif %}</td>     
+                         {% endfor %}
                         </tr>
                 
                   

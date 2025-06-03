@@ -1,15 +1,156 @@
-
-
-
 {% extends 'formBase.html' %}
 
 {% block titulo %}Crear Horario{% endblock %}
 
 {% block contenido %}
-    <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {{ error }}
-    <button type="submit" class="btn btn-primary">Crear Horario</button>
-</form>
+<div class="row justify-content-center">
+    <div class="">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h5 class="card-title mb-0 fw-bold">
+                    <i class="bi bi-calendar-plus me-2"></i>Crear Nuevo Horario
+                </h5>
+                <p class="mb-0 mt-2"><small>Programa un nuevo horario de tutoría</small></p>
+            </div>
+            <div class="card-body p-4">
+                {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        {{ error }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="text-center mb-3">
+                            <i class="bi bi-clock text-primary" style="font-size: 2rem;"></i>
+                        </div>
+                        
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                                    {% if field.label %}
+                                        {{ field.label }}
+                                    {% endif %}
+                                </label>
+                                
+                                {% if field.field.widget.input_type == 'textarea' %}
+                                    <textarea class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" rows="3" placeholder="Describe detalles adicionales...">{% if field.value %}{{ field.value }}{% endif %}</textarea>
+                                {% elif field.field.widget.input_type == 'select' %}
+                                    <select class="form-select" id="{{ field.id_for_label }}" name="{{ field.name }}">
+                                        {% for option in field %}
+                                            {{ option }}
+                                        {% endfor %}
+                                    </select>
+                                {% elif field.field.widget.input_type == 'date' %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                        <input type="date" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" {% if field.value %}value="{{ field.value }}"{% endif %}>
+                                    </div>
+                                {% elif field.field.widget.input_type == 'time' %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                        <input type="time" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" {% if field.value %}value="{{ field.value }}"{% endif %}>
+                                    </div>
+                                {% elif field.field.widget.input_type == 'number' %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                        <input type="number" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" placeholder="{% if field.label %}{{ field.label }}{% endif %}" {% if field.value %}value="{{ field.value }}"{% endif %}>
+                                    </div>
+                                {% else %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-info-circle"></i></span>
+                                        <input type="{{ field.field.widget.input_type|default:'text' }}" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" placeholder="{% if field.label %}{{ field.label }}{% endif %}" {% if field.value %}value="{{ field.value }}"{% endif %}>
+                                    </div>
+                                {% endif %}
+                                
+                                {% if field.help_text %}
+                                    <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                                
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in field.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-calendar-plus-fill me-2"></i>Crear Horario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                El horario estará disponible para solicitudes de tutoría
+            </small>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos para mejorar la apariencia de los campos */
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #ced4da;
+        min-width: 45px;
+        justify-content: center;
+    }
+    
+    /* Animación para el botón */
+    .btn-primary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+    
+    .btn-outline-secondary {
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Efecto sutil para el icono principal */
+    .bi-clock {
+        animation: tick 2s infinite;
+    }
+    
+    @keyframes tick {
+        0%, 100% {
+            transform: rotate(0deg);
+        }
+        25% {
+            transform: rotate(5deg);
+        }
+        75% {
+            transform: rotate(-5deg);
+        }
+    }
+</style>
 {% endblock %}
