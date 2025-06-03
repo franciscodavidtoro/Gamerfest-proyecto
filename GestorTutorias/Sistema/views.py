@@ -26,20 +26,20 @@ class inicioSesion(LoginView):
     
 
     def get_success_url(self):
-        if hasattr(self.request.user, 'cordinador'):
-            return redirect('CordinadorDashboard')
-        elif hasattr(self.request.user, 'tutor'):
-            return redirect('ver_horario')
-        elif hasattr(self.request.user, 'alumno'):
-            return redirect('crear_solicitud')
+        if self.request.user.coordinador:
+            return reverse_lazy('cordinadorDashboard')
+        elif self.request.user.tutor:
+            return reverse_lazy('ver_horario')
+        elif self.request.user.alumno:
+            return reverse_lazy('crear_solicitud')
         else:
-            return redirect('home')
+            return reverse_lazy('home')
         
     
 class CrearUsuarioView(View):
     template_name='crear_usuario.html'
     form_class = CrearUsusuarioForm
-    success_url = reverse_lazy('index') 
+    
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -47,12 +47,15 @@ class CrearUsuarioView(View):
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("Usuario creado correctamente")
+            if request.user.is_authenticated:
+                return redirect('index')
+            return  redirect('inciarSesion') 
+        return render(request, self.template_name, {'form': form, 'error': 'Error al crear el usuario'})
     
 class EditarUsuarioView(View):
     template_name='editar_usuario.html'
     form_class = EditarUsuarioForm
-    success_url = redirect('home')
+    success_url = reverse_lazy('') #corejir
     
     def get(self, request):
         form = self.form_class(instance=request.user)
@@ -67,7 +70,7 @@ class EditarUsuarioView(View):
 class EliminarUsuarioView(View):
     template_name='eliminar_usuario.html'
     form_class = EliminarUsuarioForm
-    success_url = redirect('home')  
+    success_url = reverse_lazy('') #corejir
     def get(self, request):
         form = self.form_class()
         return render(request, self.template_name, {'form': form})
@@ -285,5 +288,25 @@ class verHorario(View):
             horarios = []
         
         return render(request, self.template_name, {'horarios': horarios, 'extHoratios': extHoratios})
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+class CordinadorDashboard(View):
+    template_name = 'cordinador_dashboard.html'
+    
+    def get(self, request):
+        if self.request.user.coordinador:
+            
+            return render(request, self.template_name)
+        else:
+            return HttpResponse("No tienes permiso para acceder a este dashboard")
 
         
