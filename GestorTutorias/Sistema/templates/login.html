@@ -82,7 +82,7 @@
         <h4 class="fw-bold text-dark mb-2">Bienvenido</h4>
         <p class="text-muted">Accede a tu cuenta del sistema de tutorías</p>
       </div>
-
+      
       {% if error %}
         <div class="alert alert-danger error-alert d-flex align-items-center" role="alert">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>
@@ -116,6 +116,7 @@
             {% endif %}
           </div>
         {% endfor %}
+        {{ error }}
         
         <div class="d-grid mt-4">
           <button type="submit" class="btn btn-primary btn-login btn-lg">
