@@ -4,27 +4,41 @@
 
 {% block contenido %}
 
-
-{% for usuari in usuarios %}
-<div class="usuario">
-    <h2>{{ usuari.first_name }} {{ usuari.last_name }}</h2>
-    <p>Correo: {{ usuari.email }}</p>
-    <p>Rol:</p>
-    {% if usuari.coordinador %}
-         Coordinador
-    {% endif %}
-    {% if usuari.tutor %}
-        Tutor
-    {% endif %}
-    {% if usuari.alumno %}
-         alumno
-    {% endif %}
-    
-    
-    <a href="{% url 'editar_usuario' usuari.id %}">Editar</a>
-    <a href="{% url 'eliminar_usuario' usuari.id %}">Eliminar</a>
-    <a href="{2% url 'cambiar_contrasenna' usuari.id %222}">Cambiar Contraseña(camviarr url)</a>
+<div class="container mt-4">
+  <div class="row">
+    {% for usuari in usuarios %}
+    <div class="col-md-6 col-lg-4 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ usuari.first_name }} {{ usuari.last_name }}</h5>
+          <p class="card-text"><strong>Correo:</strong> {{ usuari.email }}</p>
+          <p class="card-text"><strong>Rol:</strong>
+            {% if usuari.coordinador %}
+              Coordinador
+            {% endif %}
+            {% if usuari.tutor %}
+              Tutor
+            {% endif %}
+            {% if usuari.alumno %}
+              Alumno
+            {% endif %}
+          </p>
+        </div>
+        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+          <a href="{% url 'editar_usuario' usuari.id %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil"></i> Editar
+          </a>
+          <a href="{% url 'eliminar_usuario' usuari.id %}" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash"></i> Eliminar
+          </a>
+          <a href="{% url 'cambiar_contrasenna' usuari.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-key"></i> Cambiar Contraseña
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
-{% endfor %}
 
 {% endblock %}
