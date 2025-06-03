@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
 from django.contrib.auth.views import LoginView
-
+from django.contrib.auth import logout
 
 
 from datetime import datetime, timedelta
@@ -26,11 +26,11 @@ class inicioSesion(LoginView):
     
 
     def get_success_url(self):
-        if self.request.user.coordinador:
+        if cordinador.objects.filter(usuario=self.request.user).exists():
             return reverse_lazy('cordinadorDashboard')
-        elif self.request.user.tutor:
+        elif tutor.objects.filter(usuario=self.request.user).exists():
             return reverse_lazy('ver_horario')
-        elif self.request.user.alumno:
+        elif alumno.objects.filter(usuario=self.request.user).exists():
             return reverse_lazy('crear_solicitud')
         else:
             return reverse_lazy('home')
@@ -48,7 +48,7 @@ class CrearUsuarioView(View):
         if form.is_valid():
             form.save()
             if request.user.is_authenticated:
-                return redirect('index')
+                return redirect('CordinadorDashboard')
             return  redirect('inciarSesion') 
         return render(request, self.template_name, {'form': form, 'error': 'Error al crear el usuario'})
     
@@ -310,3 +310,19 @@ class CordinadorDashboard(View):
             return HttpResponse("No tienes permiso para acceder a este dashboard")
 
         
+        
+        
+        
+class CerrarSesionView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('inciarSesion')
+    
+    
+    
+class verUsuarios(View):
+    template_name = 'ver_usuarios.html'
+    
+    def get(self, request):
+        usuarios = usuario.objects.all()
+        return render(request, self.template_name, {'usuarios': usuarios})

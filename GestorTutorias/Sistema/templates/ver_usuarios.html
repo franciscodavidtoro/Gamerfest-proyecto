@@ -1,0 +1,21 @@
+{% for usuari in usuarios %}
+<div class="usuario">
+    <h2>{{ usuari.first_name }} {{ usuari.last_name }}</h2>
+    <p>Correo: {{ usuari.email }}</p>
+    <p>Rol:</p>
+    {% if usuari.cordinador %}
+         Coordinador
+    {% endif %}
+    {% if usuari.tutor %}
+        Tutor
+    {% endif %}
+    {% if usuari.alumno %}
+         Calumno
+    {% endif %}
+    
+    
+    <a href="{% url 'editar_usuario' usuari.id %}">Editar</a>
+    <a href="{% url 'eliminar_usuario' usuari.id %}">Eliminar</a>
+    <a href="{% url 'cambiar_contrasenna' usuari.id %}">Cambiar Contraseña</a>
+</div>
+{% endfor %}
