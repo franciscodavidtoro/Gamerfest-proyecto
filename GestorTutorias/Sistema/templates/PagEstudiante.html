@@ -6,3 +6,6 @@
 {% for solicitud in solicitudes %}
     <a href="{% url 'crearFeedback' solicitud.id %}">Solicitud: {{ solicitud.id }}</a>
 {% endfor %}
+
+<a href="{% url 'elegirProfesor' %}">SoliciraTuroria</a>
+

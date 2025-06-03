@@ -1,0 +1,5 @@
+{% for solicitud in solicitudes %}
+    <a href="{% url 'crearFeedback' solicitud.id %}">Solicitud: {{ solicitud.id }}</a>
+    <a href="{% url 'aceptarSolicitud' solicitud.id %}">aceptarSolicitud</a>
+    <a href="{% url 'rechazarSolicitud' solicitud.id %}">rechazarSolicitud</a>
+{% endfor %}

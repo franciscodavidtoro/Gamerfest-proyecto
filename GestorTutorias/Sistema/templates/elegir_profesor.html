@@ -1,0 +1,8 @@
+{% for usuari in profesores %}
+<div class="usuario">
+    <h2>{{ usuari.first_name }} {{ usuari.last_name }}</h2>
+    <p>Correo: {{ usuari.email }}</p>
+    <p>Rol:</p>
+    <a href="{% url 'ver_horarios_profesor' usuari.id %}">ver_horarios_profesor</a>
+</div>
+{% endfor %}

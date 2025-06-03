@@ -1,0 +1,21 @@
+<h1>Estadísticas del Sistema</h1>
+    
+    <h2>Usuarios</h2>
+    <p>Total de usuarios: {{ usuarios }}</p>
+    <p>Tutores: {{ tutores }}</p>
+    <p>Alumnos: {{ alumnos }}</p>
+    <p>Coordinadores: {{ coordinadores }}</p>
+    
+    <h2>Promedio de Feedbacks por Tutor</h2>
+    <table border="1">
+        <tr>
+            <th>Tutor</th>
+            <th>Promedio</th>
+        </tr>
+        {% for feedback in PromedioFeedbacksTutores %}
+        <tr>
+            <td>{{ feedback.solicitud__horario__tutor__usuario__username }}</td>
+            <td>{{ feedback.promedio|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </table>

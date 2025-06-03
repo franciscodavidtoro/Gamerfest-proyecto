@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout
-
+from django.db.models import Avg
 
 from datetime import datetime, timedelta,date
 
@@ -123,19 +123,20 @@ class crearHorario(View):
 class crearSolicitud(View):
     template_name = 'crear_solicitud.html'
     form_class = CrearSolicitudForm  
-    def get(self, request):
+    def get(self, request,pk):
         if hasattr(request.user, 'alumno'):
             form = self.form_class()
             horarios = horario.objects.filter(disponibilidad=True)
             return render(request, self.template_name, {'form': form, 'horarios': horarios})
         else:
             return HttpResponse("No tienes permiso para crear una solicitud")
-    def post(self, request):
+    def post(self, request,pk):
         if hasattr(request.user, 'alumno'):
             form = self.form_class(request.POST)
             if form.is_valid():
                 solicitud_instance = form.save(commit=False)
                 solicitud_instance.estudiante = request.user.alumno
+                solicitud_instance.horario = get_object_or_404(horario, id=pk)
                 solicitud_instance.save()
                 return HttpResponse("Solicitud creada correctamente")
             else:
@@ -158,29 +159,33 @@ class verSolicitudes(View):
         return render(request, self.template_name, {'solicitudes': solicitudes})
     
 class aceptarSolicitud(View):
-    def get(self,request, solicitud_id):
+    def get(self, request, pk):
         try:
-            solicitud_instance = solicitud.objects.get(id=solicitud_id)
-            if hasattr(request.user, 'cordinador') :
-                solicitud_instance.horario.disponibilidad = False
-                solicitud_instance.horario.save()
-                solicitud_instance.estado = 'Aceptada'
-                return HttpResponse("Solicitud aceptada correctamente")
-            else:
-                return HttpResponse("No tienes permiso para aceptar esta solicitud")
+            solicitud_instance = solicitud.objects.get(id=pk)
+
+            # Cambiar disponibilidad en el horario relacionado
+            solicitud_instance.horario.disponibilidad = False
+            solicitud_instance.horario.save()
+
+            # Cambiar el estado de la solicitud y guardar
+            solicitud_instance.estado = 'Aceptada'
+            solicitud_instance.save()
+
+            return HttpResponse("Solicitud aceptada correctamente")
+
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
 
+
 class rechazarSolicitud(View):
-    def get(self, request, solicitud_id):
+    def get(self, request, pk):
         try:
-            solicitud_instance = solicitud.objects.get(id=solicitud_id)
-            if hasattr(request.user, 'cordinador'):
-                solicitud_instance.estado = 'Rechazada'
-                solicitud_instance.save()
-                return HttpResponse("Solicitud rechazada correctamente")
-            else:
-                return HttpResponse("No tienes permiso para rechazar esta solicitud")
+            solicitud_instance = solicitud.objects.get(id=pk)
+            
+            solicitud_instance.estado = 'Rechazada'
+            solicitud_instance.save()
+            return HttpResponse("Solicitud rechazada correctamente")
+            
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
 
@@ -188,9 +193,9 @@ class crearFeedback(View):
     template_name = 'crear_feedback.html'
     form_class = crearFeedbackForm
     
-    def get(self, request, solicitud_id):
+    def get(self, request, pk):
         try:
-            solicitud_instance = solicitud.objects.get(id=solicitud_id)
+            solicitud_instance = solicitud.objects.get(id=pk)
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
         
@@ -201,9 +206,9 @@ class crearFeedback(View):
         else:
             return HttpResponse("No tienes permiso para crear un feedback")
     
-    def post(self, request, solicitud_id):
+    def post(self, request, pk):
         try:
-            solicitud_instance = solicitud.objects.get(id=solicitud_id)
+            solicitud_instance = solicitud.objects.get(id=pk)
         except solicitud.DoesNotExist:
             return HttpResponse("Solicitud no encontrada")
         
@@ -211,7 +216,7 @@ class crearFeedback(View):
         form = self.form_class(request.POST)
         if form.is_valid() :
             feedback_instance = form.save(commit=False)
-                
+            feedback_instance.solicitud = solicitud_instance
             feedback_instance.save()
             return HttpResponse("Feedback creado correctamente")
         else:
@@ -296,7 +301,7 @@ class PagEstudiante(View):
     def get(self, request):
         fecha_inicio =datetime.today().strftime('%Y-%m-%d')
         
-        solicitudes = solicitud.objects.filter(estudiante=request.user.alumno, estado='aceptada')
+        solicitudes = solicitud.objects.filter(estudiante=request.user.alumno, estado='Aceptada')
         horarios_ids = solicitudes.values_list('horario_id', flat=True)
 
         horariosPendientes = horario.objects.filter(
@@ -304,12 +309,25 @@ class PagEstudiante(View):
             disponibilidad=False,
             id__in=horarios_ids
         )
-        solicitudes_sin_feedback = solicitud.objects.filter(estudiante=request.user.alumno, estado='aceptada').exclude(feedbacks__isnull=False)
+        solicitudes_sin_feedback = solicitud.objects.filter(estudiante=request.user.alumno, estado='Aceptada').exclude(feedbacks__isnull=False)
 
         
         return render(request, self.template_name, {'solicitudes':solicitudes_sin_feedback, 'horarios': horariosPendientes})
         
         
+        
+class elegirProfesor(View):
+    template_name = 'elegir_profesor.html'
+    def get(self, request):
+        profesores = usuario.objects.filter(tutor__isnull=False, Eliminado=False)
+        return render(request, self.template_name, {'profesores': profesores})
+    
+class ver_horarios_profesor(View):
+    template_name = 'ver_horarios_profesor.html'
+    def get(self, request, pk):
+        profesor = get_object_or_404(tutor, usuario__id=pk)
+        horarios = horario.objects.filter(tutor=profesor, disponibilidad=True)
+        return render(request, self.template_name, { 'horarios': horarios})
     
     
     
@@ -347,3 +365,45 @@ class verUsuarios(View):
     def get(self, request):
         usuarios = usuario.objects.filter(Eliminado=False)
         return render(request, self.template_name, {'usuarios': usuarios})
+    
+    
+    
+class Tutorias_pendientes(View):
+    template_name = 'tutorias_pendientes.html'
+    
+    def get(self, request):
+        
+        solicitudes = solicitud.objects.filter(estado='pendiente')
+        return render(request, self.template_name, {'solicitudes': solicitudes})
+        
+        
+        
+        
+class Estadisticas(View):
+    template_name = 'estadisticas.html'
+    
+    def get(self, request):
+        
+            usuarios = usuario.objects.filter(Eliminado=False).count()
+            tutores = tutor.objects.all().exclude(usuario__Eliminado=True).count()
+            alumnos = alumno.objects.all().exclude(usuario__Eliminado=True).count()
+            coordinadores = cordinador.objects.all().exclude(usuario__Eliminado=True).count()
+            
+            
+        
+            PromedioFeedbacksTutores = Feedback.objects.filter(solicitud__horario__tutor__usuario__Eliminado=False)\
+                                        .values('solicitud__horario__tutor__usuario__username')\
+                                        .annotate(promedio=Avg('calificacion'))\
+                                        .order_by('-promedio')
+                                        
+            
+            
+            return render(request, self.template_name, {
+                'usuarios': usuarios,
+                'tutores': tutores,
+                'alumnos': alumnos,
+                'coordinadores': coordinadores,
+                'PromedioFeedbacksTutores': PromedioFeedbacksTutores
+            })
+       
+            
