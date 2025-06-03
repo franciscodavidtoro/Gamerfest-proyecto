@@ -1,18 +1,124 @@
-{% for horario in horarios %}
-    <p>Horario: {{ horario.hora_inicio }}</p>
-    <p>Fecha: {{ horario.fecha }}</p>
-{% endfor %}
-
-{% for horariosPendiente in horariosPendientes %}
-    <p>Horario: {{ horariosPendiente.hora_inicio }}</p>
-    <p>Fecha: {{ horariosPendiente.fecha }}</p>
-    adsfsdfasfd
-{% endfor %}
-
-{% if extHoratios %}
-    <a href="{% url 'PagTutorParametro' dia %}">Ver Horarios</a>
-{% endif %}
 
 
-<a href="{% url 'crearHorario'  %}">Crear Horario </a>
+
+{% extends 'formBase.html' %}
+
+{% block titulo %}Tutor{% endblock %}
+
+{% block contenido %}
+   
+
+
+
+  <div class="container-fluid p-4">
+    <div class="row g-4">
+
+      <!-- Columna izquierda -->
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-header bg-primary text-white text-center fw-semibold fs-5">
+            Estado de Tutorías
+          </div>
+          <div class="card-body">
+            <h5 class="text-success"><i class="bi bi-check-circle-fill me-2"></i>Aprobadas</h5>
+            <ul class="list-group mb-4">
+              
+                {% for horariosPendiente in horariosPendientes %}
+            
+            {% if horariosPendiente.disponibilidad%}
+            
+              
+              
+            {% else %}
+                <li class="list-group-item">Horario: {{ horariosPendiente.hora_inicio }} - Fecha: {{ horariosPendiente.fecha }}</li>
+            {% endif %}
+            
+            {% endfor %}
+
+
+            </ul>
+            <h5 class="text-warning"><i class="bi bi-clock-fill me-2"></i>Pendientes</h5>
+            
+                <ul class="list-group mb-4">
+              {% for horariosPendiente in horariosPendientes %}
+            
+            {% if horariosPendiente.disponibilidad%}
+            
+              <li class="list-group-item">Horario: {{ horariosPendiente.hora_inicio }} - Fecha: {{ horariosPendiente.fecha }}</li>
+              
+            
+            {% endif %}
+            
+            {% endfor %}
+           
+            </ul>
+
+            
+
+
+
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna derecha -->
+      <div class="col-md-8">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+            <span class="fw-semibold fs-5">Horario de Tutorías</span>
+            <button class="btn btn-light btn-sm" onclick="window.location.href='{% url 'crearHorario'  %}'">
+              <i class="bi bi-plus-circle me-1"></i> Agregar Horario
+            </button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped mb-0 text-center align-middle">
+                <thead class="table-primary">
+                  <tr>
+                    <th scope="col">Hora</th>
+                    <th scope="col">Disponibilidad</th>
+                    <th scope="col">Lunes</th>
+                    <th scope="col">Martes</th>
+                    <th scope="col">Miércoles</th>
+                    <th scope="col">Jueves</th>
+                    <th scope="col">Viernes</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  
+                  {% for horario in horarios %}
+                        <tr>
+                        <th scope="row">{{ horario.hora_inicio }}</th>
+                        <td>{% if horario.disponibilidad %}libre {% else %} ocupado {% endif %}</td>
+                        <td>{% if horario.fecha|date:"l" == 'Monday' %}✓{% else %}-{% endif %}</td>
+                        <td>{% if horario.fecha|date:"l" == 'Tuesday' %}✓{% else %}-{% endif %}</td>
+                        <td>{% if horario.fecha|date:"l" == 'Wednesday' %}✓{% else %}-{% endif %}</td>
+                        <td>{% if horario.fecha|date:"l" == 'Thursday' %}✓{% else %}-{% endif %}</td>
+                        <td>{% if horario.fecha|date:"l" == 'Friday' %}✓{% else %}-{% endif %}</td>      {% endfor %}
+                        </tr>
+                
+                  
+                    
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
 

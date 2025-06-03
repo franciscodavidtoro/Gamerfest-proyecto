@@ -269,7 +269,7 @@ def exixten_horarios(dia, profesor):
 def horariosPendiente(dia, profesor):
     #obtine todos los horarios aprovados para el profesor
     fecha_inicio = datetime.strptime(dia, '%Y-%m-%d')
-    horarios = horario.objects.filter(tutor=profesor, fecha__gte=fecha_inicio, disponibilidad=False)
+    horarios = horario.objects.filter(tutor=profesor, fecha__gte=fecha_inicio)
     if not horarios:
         return []
 

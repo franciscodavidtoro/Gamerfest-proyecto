@@ -1,1 +1,76 @@
-<a href="{% url 'inciarSesion' %}">iniciarSecion</a>
+
+
+{% extends 'formBase.html' %}
+
+{% block titulo %}Tutor{% endblock %}
+
+{% block contenido %}
+
+
+  <!-- Contenido Principal -->
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h1 class="display-4 fw-bold mb-4">Sistema de Gestión de Tutorías</h1>
+        <p class="lead mb-5">Plataforma educativa que conecta estudiantes con profesores para tutorías personalizadas y efectivas.</p>
+        
+        <!-- Información del programa -->
+        <div class="card shadow mb-5">
+          <div class="card-body p-5">
+            <h2 class="fw-bold mb-4">¿Qué es nuestro sistema?</h2>
+            <p class="text-start">Nuestro Sistema de Gestión de Tutorías es una herramienta diseñada para facilitar el proceso educativo entre estudiantes y profesores. La plataforma permite:</p>
+            
+            <div class="row text-start mt-4">
+              <div class="col-md-4 mb-3">
+                <h5 class="text-primary"><i class="bi bi-mortarboard me-2"></i>Para Alumnos</h5>
+                <ul class="list-unstyled">
+                  <li>• Solicitar tutorías</li>
+                  <li>• Ver tutorías pendientes</li>
+                  <li>• Calificar profesores</li>
+                </ul>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h5 class="text-success"><i class="bi bi-person-workspace me-2"></i>Para Profesores</h5>
+                <ul class="list-unstyled">
+                  <li>• Gestionar horarios</li>
+                  <li>• Aceptar solicitudes</li>
+                  <li>• Registrar sesiones</li>
+                </ul>
+              </div>
+              <div class="col-md-4 mb-3">
+                <h5 class="text-dark"><i class="bi bi-clipboard-data me-2"></i>Para Coordinadores</h5>
+                <ul class="list-unstyled">
+                  <li>• Supervisar tutorías</li>
+                  <li>• Gestionar usuarios</li>
+                  <li>• Ver estadísticas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones principales -->
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+          <a href="{% url 'inciarSesion' %}" class="btn btn-primary btn-lg px-4">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+          </a>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Simple -->
+  <footer class="bg-dark text-white py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Sistema de Gestión de Tutorías</h5>
+          <p class="small">© 2023 Todos los derechos reservados</p>
+        </div>
+        
+      </div>
+    </div>
+  </footer>
+
+{% endblock %}
