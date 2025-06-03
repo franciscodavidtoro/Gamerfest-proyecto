@@ -27,7 +27,7 @@
             <tbody>
                 {% for feedback in PromedioFeedbacksTutores %}
                 <tr>
-                    <td>{{ feedback.solicitud.horario.tutor.usuario.username }}</td>
+                    <td>{{ feedback.solicitud__horario__tutor__usuario__username }}</td>
                     <td>{{ feedback.promedio|floatformat:2 }}</td>
                 </tr>
                 {% endfor %}

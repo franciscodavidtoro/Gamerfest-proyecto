@@ -15,7 +15,7 @@
   <style>
     body {
       font-family: 'Nunito', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #0d6efd 0%, #6f42c1 100%);
       min-height: 100vh;
     }
     
@@ -30,7 +30,7 @@
     
     .login-icon {
       font-size: 4rem;
-      color: #667eea;
+      color: #0d6efd;
       margin-bottom: 1rem;
     }
     
@@ -45,12 +45,12 @@
     }
     
     .form-floating input:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
     }
     
     .btn-login {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-color: #0d6efd;
       border: none;
       border-radius: 15px;
       padding: 12px;
@@ -61,8 +61,9 @@
     }
     
     .btn-login:hover {
+      background-color: #0b5ed7;
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
     }
     
     .error-message {
@@ -77,6 +78,14 @@
     .form-label {
       font-weight: 600;
       color: #495057;
+    }
+    
+    .security-message {
+      background: rgba(25, 135, 84, 0.1);
+      border: 1px solid rgba(25, 135, 84, 0.3);
+      color: #198754;
+      padding: 8px 12px;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -104,12 +113,12 @@
           {% if field.field.widget.input_type == 'password' %}
             <input type="password" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" placeholder="{{ field.label }}" {% if field.value %}value="{{ field.value }}"{% endif %} required>
             <label for="{{ field.id_for_label }}">
-              <i class="bi bi-lock-fill me-2"></i>{{ field.label }}
+              <i class="bi bi-lock-fill me-2 text-primary"></i>{{ field.label }}
             </label>
           {% else %}
             <input type="text" class="form-control" id="{{ field.id_for_label }}" name="{{ field.name }}" placeholder="{{ field.label }}" {% if field.value %}value="{{ field.value }}"{% endif %} required>
             <label for="{{ field.id_for_label }}">
-              <i class="bi bi-person-fill me-2"></i>{{ field.label }}
+              <i class="bi bi-person-fill me-2 text-primary"></i>{{ field.label }}
             </label>
           {% endif %}
           
@@ -131,10 +140,10 @@
     </form>
     
     <div class="text-center mt-4">
-      <small class="text-muted">
+      <div class="security-message">
         <i class="bi bi-shield-check me-1"></i>
-        Acceso seguro al sistema de tutorías
-      </small>
+        <small>Acceso seguro al sistema de tutorías</small>
+      </div>
     </div>
   </div>
 
